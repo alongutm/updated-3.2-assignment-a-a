@@ -1,3 +1,5 @@
+-- DROP TABLE users;
+
 
 -- CREATE TABLE [dbo].[users](
 -- 	[user_id] [UNIQUEIDENTIFIER] PRIMARY KEY NOT NULL default NEWID(),
@@ -9,9 +11,8 @@
 --     [email] [varchar](30) NOT NULL
 -- )
 
--- INSERT INTO users VALUES 
---             (default, 'AmitShakarchy', 'AmitShakarchy', 'Amit',
---             'Shakarchy','Israel','amit@mail.com');
+-- -- INSERT INTO users VALUES 
+-- --             (default, 'AmitShakarchy', 'AmitShakarchy', 'Amit',
+-- --             'Shakarchy','Israel','amit@mail.com');
 
-
-SELECT * from users;
+SELECT * FROM users

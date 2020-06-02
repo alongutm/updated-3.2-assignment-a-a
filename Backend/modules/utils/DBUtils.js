@@ -7,17 +7,16 @@ const sql= require("mssql");
 // --- configurations:
 
 const config = {
-    user: process.env.tedious_userName,
-    password: process.env.tedious_password,
-    server: process.env.tedious_server,
-    database: process.env.tedious_database,
-    connectionTimeout: 1500000,
-    options: {
-      encrypt: true,
-      enableArithAbort: true
-    }
-  };
-
+  user: "amitAlon",
+  password: "sry9Bzhx",
+  server: "recipe-server-aa.database.windows.net",
+  database: "recipe_db",
+  connectionTimeout: 1500000,
+  options: {
+    encrypt: true,
+    enableArithAbort: true
+  }
+};
   const pool = new sql.ConnectionPool(config);
   const poolConnect = pool
     .connect()
@@ -35,4 +34,3 @@ exports.execQuery = async function(query){
         throw error;
     }
 };
-

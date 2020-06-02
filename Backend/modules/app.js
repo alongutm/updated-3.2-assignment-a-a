@@ -6,8 +6,9 @@ const morgan= require("morgan");
 const session= require("client-sessions");
 const path = require("path");
 const logger = require("morgan");
+const DBUtils = require("./utils/DBUtils");
 
-var router = express.Router();
+//var router = express.Router();
 
 // --- routes importing
 const auth = require("./routes/auth.js");
