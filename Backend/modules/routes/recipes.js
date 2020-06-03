@@ -8,24 +8,31 @@ const DBUtils = require("../utils/DBUtils");
 
 
 router.get("/recipeInfo", async (req, res, next) => {
-    try {
-      const recipe = await getRecipeInfo(req.query.recipe_id);
-      let fullInfo= {
-        recipe_id: recipe.data.id,
-        recipeName: recipe.data.title,
-        image: recipe.data.image,
-        coockingTime: recipe.data.readyInMinutes,
-        numberOfLikes: recipe.data.aggregateLikes,
-        isVegan: recipe.data.vegan,
-        isVegeterian: recipe.data.vegetarian ,
-        isGlutenFree: recipe.data.glutenFree,
-        IngredientList: recipe.data.extendedIngredients.map(function(obj){
-            return obj.name;
-        }),
+    try{ 
+    // get seen & isFavorite
+        const favorite = await DBUtils.execQuery(`SELECT * FROM favoriteRecipes WHERE user_id='${req.session.id}' and recipe_id='${req.query.recipe_id}'`);
+        let isFavorite= (favorite.length>0);
+        
+        const seen = await DBUtils.execQuery(`SELECT * FROM seenRecipes WHERE user_id='${req.session.id}' and recipe_id='${req.query.recipe_id}'`);
+        let wasSeen= (favorite.length>0);
+
+        const recipe = await getRecipeInfo(req.query.recipe_id);
+        let fullInfo = {
+            recipe_id: recipe.data.id,
+            recipeName: recipe.data.title,
+            image: recipe.data.image,
+            coockingTime: recipe.data.readyInMinutes,
+            numberOfLikes: recipe.data.aggregateLikes,
+            isVegan: recipe.data.vegan,
+            isVegeterian: recipe.data.vegetarian,
+            isGlutenFree: recipe.data.glutenFree,
+            IngredientList: recipe.data.extendedIngredients.map(function (obj) {
+                return obj.name;
+            }),
         Instructions: recipe.data.summary,
         MealsQuantity: recipe.data.servings,
-        seen: false,
-        isFavorite: false 
+        seen: wasSeen,
+        isFavorite: isFavorite 
       }
       
       res.send({ fullInfo });
