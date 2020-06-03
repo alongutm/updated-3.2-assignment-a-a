@@ -15,4 +15,7 @@
 -- --             (default, 'AmitShakarchy', 'AmitShakarchy', 'Amit',
 -- --             'Shakarchy','Israel','amit@mail.com');
 
+
+
+
 SELECT * FROM users

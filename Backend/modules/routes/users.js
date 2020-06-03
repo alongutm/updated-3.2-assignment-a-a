@@ -4,7 +4,6 @@ const DBUtils = require("../utils/DBUtils");
 const bcrypt = require("bcrypt");
 
 
-
 router.post("/login", async (req, res, next) => {
     try {
         const users = await DBUtils.execQuery("SELECT username FROM users");
@@ -62,53 +61,6 @@ router.post(
     }
 );
 
-// router.post("/register", async (req, res, next)=>{
-//     try{
-//         // check- paramerters exits
-//         if(!(req.body.username 
-//             && req.body.password && req.body.country 
-//             && req.body.firstName && req.body.firstName && req.body.email)){
-//                 throw { status: 422, massage: "Params are missing"};
-//             }
-
-//         // check if username exists in our DB
-//         const users = await DBUtils.execQuery("SELECT username FROM users");
-//         if( users.find((x)=> x.username === req.body.username)){
-//             throw { status: 409, massage: "username already exists"};
-//         }
-
-//         // encrypt password
-//         let hash_pass= bcrypt.hashSync(req.body.password, parseInt(process.env.bcrypt_saltRounds));
-
-//         // add the new user to our DB
-//         await DButils.execQuery(
-//             `INSERT INTO users VALUES 
-//             (default, '
-//             ${req.body.username}', '
-//             ${hash_pass}', ' 
-//             ${req.body.firstName}','
-//             ${req.body.lastName}','
-//             ${req.body.country}', '
-//             ${req.body.email}')` );
-
-//         res.status(201).send({ 
-//             message: "successful registration, a new user has been added to the system", 
-//             success: true});
-
-//     }catch(error){
-//         console.log(error);
-//         next(error);
-//     }
-// });
-
-
-
-
-router.post("/logout", function (req, res) {
-    req.session.reset();
-    res.send({ success: true, message: "logout succeeded" });
-});
-
 
 //Authenticate all incoming requests
 router.use((req, res, next) => {
@@ -123,6 +75,13 @@ router.use((req, res, next) => {
     }
     res.sendStatus(401);
 });
+
+
+router.post("/logout", function (req, res) {
+    req.session.reset();
+    res.send({ success: true, message: "logout succeeded" });
+});
+
 
 
 module.exports = router;
