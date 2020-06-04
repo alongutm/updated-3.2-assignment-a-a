@@ -16,4 +16,9 @@
 --     PRIMARY KEY (username, recipe_id)
 -- )
 
+-- INSERT INTO [dbo].[myRecipes] VALUES
+-- ("AlonGutman", default, "Green Curry Cod","https://spoonacular.com/recipeImages/2457-556x370.jpg" , 55,3,"false",
+--  ),
+
+
 SELECT * from myRecipes;

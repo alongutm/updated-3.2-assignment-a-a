@@ -5,7 +5,6 @@ const axios = require("axios");
 const recipeUtils = require("../utils/recipeUtils");
 
 
-
 router.get("/profileRecipeInfo", async (req, res, next) => {
     try {
     // get the user's username
@@ -35,7 +34,7 @@ router.get("/MyRecipes", async (req, res, next) => {
       let username = await DBUtils.execQuery(`SELECT username FROM users WHERE user_id= cast('${req.session.id}' as UNIQUEIDENTIFIER)`);
       username= username[0].username;
       // get my recipes from the myRecipes table
-      const myRecipes = await DBUtils.execQuery(`SELECT * FROM favoriteRecipes WHERE username='${username}'`);
+      const myRecipes = await DBUtils.execQuery(`SELECT * FROM myRecipes WHERE username='${username}'`);
       res.send((myRecipes));
     }
     catch (error) {
@@ -43,4 +42,18 @@ router.get("/MyRecipes", async (req, res, next) => {
     }
   });
 
+
+  router.get("/MyFavorites", async (req, res, next) => {
+    try {
+      // get the user's username
+      let username = await DBUtils.execQuery(`SELECT username FROM users WHERE user_id= cast('${req.session.id}' as UNIQUEIDENTIFIER)`);
+      username= username[0].username;
+      // get my recipes from the myRecipes table
+      const myFavorites = await DBUtils.execQuery(`SELECT * FROM favoriteRecipes WHERE username='${username}'`);
+      res.send((myFavorites));
+    }
+    catch (error) {
+      next(error);
+    }
+  });
 module.exports = router;
