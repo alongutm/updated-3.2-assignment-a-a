@@ -10,14 +10,17 @@ const recipeUtils = require("../utils/search_recipes");
 
 router.get("/recipeInfo", async (req, res, next) => {
   try {
-    // get seen & isFavorite
-    const favorite = await DBUtils.execQuery(`SELECT * FROM favoriteRecipes WHERE user_id='${req.session.id}' and recipe_id='${req.query.recipe_id}'`);
+    // get the user's username
+    let username = await DBUtils.execQuery(`SELECT username FROM favoriteRecipes WHERE user_id='${req.session.id}'`);
+    // get isFavorite value
+    const favorite = await DBUtils.execQuery(`SELECT * FROM favoriteRecipes WHERE recipe_id='${req.query.recipe_id}' and username ='${username}'`);
     let isFavorite = (favorite.length > 0);
-
-    const seen = await DBUtils.execQuery(`SELECT * FROM seenRecipes WHERE user_id='${req.session.id}' and recipe_id='${req.query.recipe_id}'`);
+    // get wasSeen value
+    const seen = await DBUtils.execQuery(`SELECT * FROM seenRecipes WHERE username='${username}' and recipe_id='${req.query.recipe_id}'`);
     let wasSeen = (favorite.length > 0);
-
+    // get recipe's information
     const recipe = await recipeUtils.getRecipeInfo(req.query.recipe_id);
+    // build recipe's object
     let fullInfo = {
       recipe_id: recipe.data.id,
       recipeName: recipe.data.title,
@@ -55,27 +58,21 @@ router.get("/search", async (req, res, next) => {
     next(error);
   }
 
-  res.status(200).send({ recipes });
+  res.send({ recipes });
 });
 
-
-router.get("/randomRecipes", async (req, res, next) => {
+router.get("/MyRecipes", async (req, res, next) => {
   try {
-    let recipes;
-    let instructionsInclueded = false;
-    while (!instructionsInclueded) {
-      instructionsInclueded = true;
-      recipes = await recipeUtils.getTreeRandomRecipes();
-      let recipesArray = recipes.data.recipes;
+    console.log(req.headers.cookie.session);
+    console.log(req.session.cookieName);
+    console.log(req.session);
+    console.log(req.id);
 
-      for (var i = 0; i < 3; i++) {
-        // use i as an array index
-        if (recipesArray[i].instructions == null || recipesArray[i].instructions.length == 0)
-          instructionsInclueded = false;
-      }
-    }
-    res.send(recipes.data.recipes);
-
+    // get the user's username
+    let username = await DBUtils.execQuery(`SELECT username FROM users WHERE user_id= cast('${req.session.id}' as UNIQUEIDENTIFIER)`);
+    // get my recipes from the myRecipes table
+    const myRecipes = await DBUtils.execQuery(`SELECT * FROM favoriteRecipes WHERE username='${username}'`);
+    res.send((myRecipes));
   }
   catch (error) {
     next(error);

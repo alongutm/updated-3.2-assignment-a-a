@@ -18,7 +18,7 @@ router.post("/login", async (req, res, next) => {
             throw { status: 401, massage: "wrong username or password" };
         }
         // set user's cookie
-        req.session.user_id = user.user_id;
+        req.session.id = user.user_id;
 
         // return cookie
         res.status(200).send({ message: "login succeeded", success: true });
@@ -60,7 +60,6 @@ router.post(
         }
     }
 );
-
 
 //Authenticate all incoming requests
 router.use((req, res, next) => {

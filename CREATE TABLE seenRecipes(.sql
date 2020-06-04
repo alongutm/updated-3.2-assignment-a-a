@@ -1,8 +1,10 @@
+DROP TABLE seenRecipes;
+
 CREATE TABLE seenRecipes(
 
-    [user_id] [varchar](300) NOT NULL,
+    [username] [varchar](300) NOT NULL,
     [recipe_id] int not null,
-    PRIMARY KEY (user_id, recipe_id)
+    PRIMARY KEY (username, recipe_id)
 
 )
 
