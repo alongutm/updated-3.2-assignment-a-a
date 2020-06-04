@@ -43,14 +43,42 @@ async function searchRecieps(recipesArray){
 }
 
 
-function getRecipeInfo(id) {
-    return axios.get(`${api_domain}/${id}/information`, {
+function getRecipeFullInfo(id) {
+  return axios.get(`${api_domain}/${id}/information`, {
       params: {
         includeNutrition: false,
         apiKey: process.env.spooncular_apiKey
       }
     });
   }
+  
+  async function getRecipeInfo(id) {
+    // get recipe's information
+    const recipe = await getRecipeFullInfo(id);
+    // build recipe's object
+    let info = {
+      recipe_id: recipe.data.id,
+      recipeName: recipe.data.title,
+      image: recipe.data.image,
+      coockingTime: recipe.data.readyInMinutes,
+      numberOfLikes: recipe.data.aggregateLikes,
+      isVegan: recipe.data.vegan,
+      isVegeterian: recipe.data.vegetarian,
+      isGlutenFree: recipe.data.glutenFree,
+      IngredientList: recipe.data.extendedIngredients.map(function (obj) {
+        return obj.name;
+      }),
+      Instructions: recipe.data.Instructions,
+      MealsQuantity: recipe.data.servings,
+    }
+    return info;
+  }
+
+
+
+
+
+
 
   function getTreeRandomRecipes() {
     return axios.get(`${api_domain}/random`, {

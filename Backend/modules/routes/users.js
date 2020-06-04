@@ -61,26 +61,10 @@ router.post(
     }
 );
 
-//Authenticate all incoming requests
-router.use((req, res, next) => {
-    if (req.session && req.session.id) {
-        const id = req.session.id;
-        const user = checkIdOnDb(id);
-
-        if (user) {
-            req.user = user;
-            next();
-        }
-    }
-    res.sendStatus(401);
-});
-
-
 router.post("/logout", function (req, res) {
     req.session.reset();
     res.send({ success: true, message: "logout succeeded" });
 });
-
 
 
 module.exports = router;
