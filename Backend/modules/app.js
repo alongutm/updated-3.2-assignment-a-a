@@ -39,6 +39,7 @@ var port = process.env.PORT || "3000";// print requests logs
 const auth = require("./routes/auth.js");
 const users = require("./routes/users.js");
 const recipes = require("./routes/recipes.js");
+const profiles = require("./routes/profiles.js");
 
 //#region cookie middleware
 app.use(function (req, res, next) {
@@ -65,6 +66,7 @@ app.get("/alive", (req, res)=> {
 // routing (COOL!)
 app.use("/users", users);
 app.use("/recipes", recipes);
+app.use("/profiles", profiles);
 app.use(auth);
 
 // deafult router
