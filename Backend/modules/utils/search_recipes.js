@@ -31,7 +31,7 @@ async function searchRecieps(recipesArray){
       IngredientList: fullRecipe.data.extendedIngredients.map(function(obj){
           return obj.name;
       }),
-      Instructions: fullRecipe.data.summary,
+      Instructions: fullRecipe.data.Instructions,
       MealsQuantity: fullRecipe.data.servings,
       seen: false,
       isFavorite: false 
@@ -51,12 +51,20 @@ function getRecipeInfo(id) {
       }
     });
   }
+
+  function getTreeRandomRecipes() {
+    return axios.get(`${api_domain}/random`, {
+      params: {
+        number: 3,
+        apiKey: process.env.spooncular_apiKey
+      }
+    });
+  }
   
   function searchRecipeInfo(req) {
     //set default number = 5 
     var query =  req.query;
     if(query.number == null || (query.number != 10 && query.number != 15)){
-      req.query.number = 5;
       paramNum = 5;
     } 
     
@@ -75,8 +83,7 @@ function getRecipeInfo(id) {
 
 
 
-
-
   exports.searchRecieps= searchRecieps;
   exports.getRecipeInfo= getRecipeInfo;
   exports.searchRecipeInfo= searchRecipeInfo;
+  exports.getTreeRandomRecipes = getTreeRandomRecipes;
