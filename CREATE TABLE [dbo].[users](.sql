@@ -19,3 +19,4 @@
 
 
 SELECT * FROM users
+WHERE user_id = '2a14287d-c4d0-4ba2-8137-18fe8956458b';
