@@ -33,13 +33,13 @@ router.get("/recipeInfo", async (req, res, next) => {
       IngredientList: recipe.data.extendedIngredients.map(function (obj) {
         return obj.name;
       }),
-      Instructions: recipe.data.summary,
+      Instructions: recipe.data.Instructions,
       MealsQuantity: recipe.data.servings,
       seen: wasSeen,
       isFavorite: isFavorite
     }
+    res.status(200).send({ fullInfo });
 
-    res.send({ fullInfo });
   } catch (error) {
     next(error);
   }
@@ -49,8 +49,8 @@ router.get("/recipeInfo", async (req, res, next) => {
 router.get("/search", async (req, res, next) => {
   try {
     //search recipes from spooncular API according to the search query and other values (like kind of cuisine etc.)
-    var recipesObj = await recipeUtils.searchRecipeInfo(req);
-    var recipesArray = recipesObj.data.results;
+    let recipesObj = await recipeUtils.searchRecipeInfo(req);
+    let recipesArray = recipesObj.data.results;
     //ask for full recipes information from the API (with the get Recipe by {id})
     var recipes = await recipeUtils.searchRecieps(recipesArray);
   }
