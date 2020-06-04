@@ -12,27 +12,25 @@ const recipes_api_url= "https://api.spoonacular.com/recipes";
 /*
 this function iterating over the basic recipes that is inside recipesArray
 and ask the spooncular for the full recipes,
-then it sends full recipes back
+then it sends full recipes back after taking only the specific info we need.
 */
-async function searchRecieps(recipesArray){
+async function getRecipesArrayWithNeededInfo(recipesArray){
     var recipes = [];
     // the "for-of" loop is aysnc`
  for(let recipe of recipesArray){
-    var fullRecipe = await getRecipeInfo(recipe.id);
+    var fullRecipe = await getRecipeNeededInfoByID(recipe.id);
     let fullInfo= {
-      recipe_id: fullRecipe.data.id,
-      recipeName: fullRecipe.data.title,
-      image: fullRecipe.data.image,
-      coockingTime: fullRecipe.data.readyInMinutes,
-      numberOfLikes: fullRecipe.data.aggregateLikes,
-      isVegan: fullRecipe.data.vegan,
-      isVegeterian: fullRecipe.data.vegetarian ,
-      isGlutenFree: fullRecipe.data.glutenFree,
-      IngredientList: fullRecipe.data.extendedIngredients.map(function(obj){
-          return obj.name;
-      }),
-      Instructions: fullRecipe.data.Instructions,
-      MealsQuantity: fullRecipe.data.servings,
+      recipe_id: fullRecipe.recipe_id,
+      recipeName: fullRecipe.recipeName,
+      image: fullRecipe.image,
+      coockingTime: fullRecipe.coockingTime,
+      numberOfLikes: fullRecipe.numberOfLikes,
+      isVegan: fullRecipe.isVegan,
+      isVegeterian: fullRecipe.isVegeterian ,
+      isGlutenFree: fullRecipe.isGlutenFree,
+      IngredientList: fullRecipe.IngredientList,
+      instructions: fullRecipe.instructions,
+      MealsQuantity: fullRecipe.MealsQuantity,
       seen: false,
       isFavorite: false 
     }
@@ -43,7 +41,7 @@ async function searchRecieps(recipesArray){
 }
 
 
-function getRecipeFullInfo(id) {
+function getRecipeFullInfoByID(id) {
   return axios.get(`${api_domain}/${id}/information`, {
       params: {
         includeNutrition: false,
@@ -52,9 +50,10 @@ function getRecipeFullInfo(id) {
     });
   }
   
-  async function getRecipeInfo(id) {
+  async function getRecipeNeededInfoByID(id) {
     // get recipe's information
-    const recipe = await getRecipeFullInfo(id);
+    const recipe = await getRecipeFullInfoByID
+  (id);
     // build recipe's object
     let info = {
       recipe_id: recipe.data.id,
@@ -62,13 +61,13 @@ function getRecipeFullInfo(id) {
       image: recipe.data.image,
       coockingTime: recipe.data.readyInMinutes,
       numberOfLikes: recipe.data.aggregateLikes,
+      instructions: recipe.data.instructions,
       isVegan: recipe.data.vegan,
       isVegeterian: recipe.data.vegetarian,
       isGlutenFree: recipe.data.glutenFree,
       IngredientList: recipe.data.extendedIngredients.map(function (obj) {
         return obj.name;
       }),
-      Instructions: recipe.data.Instructions,
       MealsQuantity: recipe.data.servings,
     }
     return info;
@@ -89,14 +88,14 @@ function getRecipeFullInfo(id) {
     });
   }
   
-  function searchRecipeInfo(req) {
+  function searchRecipesByQuery(req) {
     //set default number = 5 
     var query =  req.query;
     if(query.number == null || (query.number != 10 && query.number != 15)){
       paramNum = 5;
     } 
     
-   
+   //sending the correct request to spooncular
    return axios.get(`${api_domain}/search`, {
      params: {
        apiKey: process.env.spooncular_apiKey,
@@ -111,7 +110,7 @@ function getRecipeFullInfo(id) {
 
 
 
-  exports.searchRecieps= searchRecieps;
-  exports.getRecipeInfo= getRecipeInfo;
-  exports.searchRecipeInfo= searchRecipeInfo;
+  exports.getRecipesArrayWithNeededInfo= getRecipesArrayWithNeededInfo;
+  exports.getRecipeNeededInfoByID= getRecipeNeededInfoByID;
+  exports.searchRecipesByQuery= searchRecipesByQuery;
   exports.getTreeRandomRecipes = getTreeRandomRecipes;

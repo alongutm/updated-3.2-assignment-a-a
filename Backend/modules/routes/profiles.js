@@ -56,4 +56,29 @@ router.get("/MyRecipes", async (req, res, next) => {
       next(error);
     }
   });
+
+  router.get("/randomRecipes", async (req, res, next) => {
+    try {
+      let recipes;
+      let instructionsInclueded = false;
+      while (!instructionsInclueded) {
+        instructionsInclueded = true;
+        recipes = await recipeUtils.getTreeRandomRecipes();
+        let recipesArray = recipes.data.recipes;
+  
+        for (var i = 0; i < 3; i++) {
+          // use i as an array index
+          if (recipesArray[i].instructions == null || recipesArray[i].instructions.length == 0)
+            instructionsInclueded = false;
+        }
+      }
+      res.send(recipes.data.recipes);
+  
+    }
+    catch (error) {
+      next(error);
+    }
+  });
+
+
 module.exports = router;

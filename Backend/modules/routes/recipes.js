@@ -15,14 +15,20 @@ router.get("/recipeInfo", async (req, res, next) => {
   }
 });
 
-
+/**
+ * search calls will get here - 
+ * this will handle them, and send them to spooncular.
+ * the orginal search-call to the spooncular returning partial info about the recpies,
+ * so another call will be made with the ID's of the recpies, in order to return
+ * full recpies.
+ */
 router.get("/search", async (req, res, next) => {
   try {
     //search recipes from spooncular API according to the search query and other values (like kind of cuisine etc.)
-    let recipesObj = await recipeUtils.searchRecipeInfo(req);
+    let recipesObj = await recipeUtils.searchRecipesByQuery(req);
     let recipesArray = recipesObj.data.results;
     //ask for full recipes information from the API (with the get Recipe by {id})
-    var recipes = await recipeUtils.searchRecieps(recipesArray);
+    var recipes = await recipeUtils.getRecipesArrayWithNeededInfo(recipesArray);
   }
   catch (error) {
     next(error);
@@ -32,6 +38,28 @@ router.get("/search", async (req, res, next) => {
 });
 
 
+router.get("/randomRecipes", async (req, res, next) => {
+  try {
+    let recipes;
+    let instructionsInclueded = false;
+    while (!instructionsInclueded) {
+      instructionsInclueded = true;
+      recipes = await recipeUtils.getTreeRandomRecipes();
+      let recipesArray = recipes.data.recipes;
+
+      for (var i = 0; i < 3; i++) {
+        // use i as an array index
+        if (recipesArray[i].instructions == null || recipesArray[i].instructions.length == 0)
+          instructionsInclueded = false;
+      }
+    }
+    res.send(recipes.data.recipes);
+
+  }
+  catch (error) {
+    next(error);
+  }
+});
 
 
 module.exports = router;
