@@ -8,7 +8,7 @@ const recipeUtils = require("../utils/recipeUtils");
 
 router.get("/recipeInfo", async (req, res, next) => {
   try {
-    let fullInfo = await recipeUtils.getRecipeInfo(req.query.recipe_id);
+    let fullInfo = await recipeUtils.getRecipeFullInfoByID(req.query.recipe_id);
     res.status(200).send({ fullInfo });
   } catch (error) {
     next(error);
@@ -40,21 +40,8 @@ router.get("/search", async (req, res, next) => {
 
 router.get("/randomRecipes", async (req, res, next) => {
   try {
-    let recipes;
-    let instructionsInclueded = false;
-    while (!instructionsInclueded) {
-      instructionsInclueded = true;
-      recipes = await recipeUtils.getTreeRandomRecipes();
-      let recipesArray = recipes.data.recipes;
-
-      for (var i = 0; i < 3; i++) {
-        // use i as an array index
-        if (recipesArray[i].instructions == null || recipesArray[i].instructions.length == 0)
-          instructionsInclueded = false;
-      }
-    }
-    res.send(recipes.data.recipes);
-
+    let recipes = await recipeUtils.getRandomRecipes();
+    res.status(200).send(recipes);
   }
   catch (error) {
     next(error);
