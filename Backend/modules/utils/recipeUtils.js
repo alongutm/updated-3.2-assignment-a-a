@@ -76,10 +76,6 @@ function getRecipeFullInfo(id) {
 
 
 
-
-
-
-
   function getTreeRandomRecipes() {
     return axios.get(`${api_domain}/random`, {
       params: {
