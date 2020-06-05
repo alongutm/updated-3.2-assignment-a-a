@@ -1,22 +1,14 @@
 -- DROP TABLE users;
 
 
--- CREATE TABLE [dbo].[users](
--- 	[user_id] [UNIQUEIDENTIFIER] PRIMARY KEY NOT NULL default NEWID(),
--- 	[username] [varchar](30) NOT NULL UNIQUE,
--- 	[password] [varchar](300) NOT NULL,
---     [firstName] [varchar](30) NOT NULL,
---     [lastName] [varchar](30) NOT NULL,
---     [country] [varchar](30) NOT NULL,
---     [email] [varchar](30) NOT NULL
--- )
-
--- -- INSERT INTO users VALUES 
--- --             (default, 'AmitShakarchy', 'AmitShakarchy', 'Amit',
--- --             'Shakarchy','Israel','amit@mail.com');
-
-
-
+CREATE TABLE [dbo].[users](
+	[user_id] [UNIQUEIDENTIFIER] PRIMARY KEY NOT NULL default NEWID(),
+	[username] [varchar](30) NOT NULL UNIQUE,
+	[password] [varchar](300) NOT NULL,
+    [firstName] [varchar](30) NOT NULL,
+    [lastName] [varchar](30) NOT NULL,
+    [country] [varchar](30) NOT NULL,
+    [email] [varchar](30) NOT NULL,
+    [profile_pic][varchar](300) NOT NULL
 
 SELECT * FROM users
-WHERE user_id = '2a14287d-c4d0-4ba2-8137-18fe8956458b';
