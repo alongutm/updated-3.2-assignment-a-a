@@ -50,7 +50,7 @@ router.post(
 
         // add the new user to our DB
         let query= `INSERT INTO users VALUES 
-        (default, '${req.body.username}', '${hash_pass}', ' ${req.body.firstName}','${req.body.lastName}','${req.body.country}', '${req.body.email}')`
+        (default, '${req.body.username}', '${hash_pass}', ' ${req.body.firstName}','${req.body.lastName}','${req.body.country}', '${req.body.email}','${req.body.profile_pic}')`
 
         await DBUtils.execQuery(query);
 
