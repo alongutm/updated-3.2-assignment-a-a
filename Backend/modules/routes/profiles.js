@@ -4,7 +4,7 @@ const DBUtils = require("../utils/DBUtils");
 const axios = require("axios");
 const recipeUtils = require("../utils/recipeUtils");
 
-router.get("/MyRecipes", async (req, res, next) => {
+router.get("/myRecipes", async (req, res, next) => {
     try {
         // get the user's username
         let username = await DBUtils.execQuery(`SELECT username FROM users WHERE user_id= cast('${req.session.id}' as UNIQUEIDENTIFIER)`);
@@ -19,7 +19,7 @@ router.get("/MyRecipes", async (req, res, next) => {
 });
 
 
-router.get("/MyFavorites", async (req, res, next) => {
+router.get("/myFavorites", async (req, res, next) => {
     try {
         // get the user's username
         let username = await DBUtils.execQuery(`SELECT username FROM users WHERE user_id= cast('${req.session.id}' as UNIQUEIDENTIFIER)`);
