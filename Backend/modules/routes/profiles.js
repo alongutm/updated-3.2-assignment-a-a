@@ -66,6 +66,7 @@ router.get("/search/query/:query/amount/:number", async (req, res, next) => {
   catch (error) {
     res.status(404).send(error);
   }
+});
 
 router.get("/myFamilyRecipes", async (req, res, next) => {
     try {
@@ -98,4 +99,5 @@ router.post("/addFavorite", async (req, res, next) => {
         next(error);
     }
 });
+
 module.exports = router;
