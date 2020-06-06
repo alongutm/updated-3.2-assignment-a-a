@@ -24,7 +24,7 @@ router.post("/login", async (req, res, next) => {
         res.status(200).send({ message: "login succeeded", success: true });
 
     } catch (error) {
-        next(error);
+        res.status(401).send(error);
     }
 });
 
@@ -56,7 +56,7 @@ router.post(
 
             res.status(201).send({ message: "user created", success: true });
         } catch (error) {
-            next(error);
+            res.status(401).send(error);
         }
     }
 );
