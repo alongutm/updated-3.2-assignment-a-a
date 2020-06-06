@@ -8,7 +8,6 @@ const DBUtils = require("../utils/DBUtils");
 const recipes_api_url = "https://api.spoonacular.com/recipes";
 
 
-// add methods here !
 
 /*
 this function iterating over the basic recipes that is inside recipesArray
@@ -16,22 +15,32 @@ and ask the spooncular for the full recipes,
 then it sends full recipes back after taking only the specific info we need.
 */
 async function getRecipesArrayWithNeededInfo(recipesArray) {
-  var recipes = [];
+  var recipesId = recipesArray.map(a => a.id);
+  let promises = [];
+  recipesId.map((id) =>
+   promises.push(axios.get(`${api_domain}/${id}/information`, {
+    params: {
+      apiKey: process.env.spooncular_apiKey
+    }
+  })));
+  let info_response = await Promise.all(promises);
+  let recipes = [];
   // the "for-of" loop is aysnc`
-  for (let recipe of recipesArray) {
-    var fullRecipe = await getRecipeNeededInfoByID(recipe.id);
+  for (let fullRecipe of info_response) {
     let fullInfo = {
-      recipe_id: fullRecipe.recipe_id,
-      recipeName: fullRecipe.recipeName,
-      image: fullRecipe.image,
-      coockingTime: fullRecipe.coockingTime,
-      numberOfLikes: fullRecipe.numberOfLikes,
-      isVegan: fullRecipe.isVegan,
-      isVegeterian: fullRecipe.isVegeterian,
-      isGlutenFree: fullRecipe.isGlutenFree,
-      IngredientList: fullRecipe.IngredientList,
-      instructions: fullRecipe.instructions,
-      MealsQuantity: fullRecipe.MealsQuantity,
+      recipe_id: fullRecipe.data.id,
+      recipeName: fullRecipe.data.title,
+      image: fullRecipe.data.image,
+      coockingTime: fullRecipe.data.readyInMinutes,
+      numberOfLikes: fullRecipe.data.aggregateLikes,
+      isVegan: fullRecipe.data.vegan,
+      isVegeterian: fullRecipe.data.vegetarian,
+      isGlutenFree: fullRecipe.data.glutenFree,
+      IngredientList: fullRecipe.data.extendedIngredients.map(function (obj) {
+        return obj.name;
+      }),
+      instructions: fullRecipe.data.instructions,
+      MealsQuantity: fullRecipe.data.servings,
       //seen: false,
       //isFavorite: false 
     }
@@ -40,6 +49,7 @@ async function getRecipesArrayWithNeededInfo(recipesArray) {
 
   return recipes;
 }
+
 
 
 function getRecipeFullInfoByID(id) {
@@ -82,8 +92,7 @@ function getTreeRandomRecipes() {
 
 async function getRecipeNeededInfoByID(id) {
   // get recipe's information
-  const recipe = await getRecipeFullInfoByID
-    (id);
+  const recipe = await getRecipeFullInfoByID(id);
   // build recipe's object
   let info = {
     recipe_id: recipe.data.id,
