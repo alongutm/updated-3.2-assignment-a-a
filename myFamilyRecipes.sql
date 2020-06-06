@@ -1,5 +1,5 @@
 
-drop TABLE myFamilyRecipes;
+-- drop TABLE myFamilyRecipes;
 
 CREATE TABLE [dbo].[myFamilyRecipes](
 
