@@ -4,6 +4,8 @@ const DBUtils = require("../utils/DBUtils");
 const axios = require("axios");
 const recipeUtils = require("../utils/recipeUtils");
 
+
+
 router.get("/MyRecipes", async (req, res, next) => {
     try {
         // get the user's username
@@ -29,6 +31,23 @@ router.get("/MyFavorites", async (req, res, next) => {
         res.status(200).send(myFavorites);
     }
     catch (error) {
+        next(error);
+    }
+});
+
+router.post("/addFavorite", async (req, res, next) => {
+    try {
+        // get the user's username
+        let username = await DBUtils.execQuery(`SELECT username FROM users WHERE user_id= cast('${req.session.id}' as UNIQUEIDENTIFIER)`);
+        username = username[0].username;
+        // get my recipes from the myRecipes table
+        const myFavorites = await DBUtils.execQuery(`SELECT * FROM favoriteRecipes WHERE username='${username}' and recipe_id='${req.query.recipe_id}'`);
+
+        if (myFavorites.length == 0) {
+            await DBUtils.execQuery(`INSERT INTO favoriteRecipes VALUES ('${username}','${req.query.recipe_id}')`);
+        }
+        res.status(200).send({ message: "Recipe was added to favorites", success: true });
+    } catch (error) {
         next(error);
     }
 });
@@ -84,20 +103,5 @@ router.get("/myFamilyRecipes", async (req, res, next) => {
 });
 
 
-router.post("/addFavorite", async (req, res, next) => {
-    try {
-        // get the user's username
-        let username = await DBUtils.execQuery(`SELECT username FROM users WHERE user_id= cast('${req.session.id}' as UNIQUEIDENTIFIER)`);
-        username = username[0].username;
-        // get my recipes from the myRecipes table
-        const myFavorites = await DBUtils.execQuery(`SELECT * FROM favoriteRecipes WHERE username='${username}' and recipe_id='${req.query.recipe_id}'`);
 
-        if (myFavorites.length == 0) {
-            await DBUtils.execQuery(`INSERT INTO favoriteRecipes VALUES ('${username}','${req.query.recipe_id}')`);
-        }
-        res.status(200).send({ message: "Recipe was added to favorites", success: true });
-    } catch (error) {
-        next(error);
-    }
-});
 module.exports = router;
