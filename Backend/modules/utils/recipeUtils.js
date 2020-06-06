@@ -63,21 +63,10 @@ function getRecipeFullInfoByID(id) {
 
 async function getRandomRecipes() {
   let recipes;
-  let instructionsInclueded = false;
-  while (!instructionsInclueded) {
-    instructionsInclueded = true;
-    recipes = await getTreeRandomRecipes();
-    let recipesArray = recipes.data.recipes;
-
-    for (var i = 0; i < 3; i++) {
-      // use i as an array index
-      if (recipesArray[i].instructions == null || recipesArray[i].instructions.length == 0)
-        instructionsInclueded = false;
-    }
-  }
+  recipes = await getTreeRandomRecipes();
+  let recipesArray = recipes.data.recipes;
   let treeRecipesNeededInfo = await getRecipesArrayWithNeededInfo(recipes.data.recipes);
   return treeRecipesNeededInfo;
-
 }
 
 
@@ -85,7 +74,8 @@ function getTreeRandomRecipes() {
   return axios.get(`${api_domain}/random`, {
     params: {
       number: 3,
-      apiKey: process.env.spooncular_apiKey
+      apiKey: process.env.spooncular_apiKey,
+      instructionsRequired: true
     }
   });
 }
@@ -123,6 +113,7 @@ function searchRecipesByQuery(req) {
       apiKey: process.env.spooncular_apiKey,
       query: params.query,
       number: params.number,
+      instructionsRequired: true,
       ...(params.diet ? { diet: params.diet } : {}),
       ...(params.cuisine ? { cuisine: params.cuisine } : {}),
       ...(params.intolerances ? { intolerances: params.intolerances } : {})
