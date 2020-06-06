@@ -53,7 +53,7 @@ router.get("/randomRecipes", async (req, res, next) => {
 * so another call will be made with the ID's of the recpies, in order to return
 * full recpies.
 */
-router.get("/search", async (req, res, next) => {
+router.get("/search/query/:query/amount/:number", async (req, res, next) => {
   try {
     //search recipes from spooncular API according to the search query and other values (like kind of cuisine etc.)
     let recipesObj = await recipeUtils.searchRecipesByQuery(req);
@@ -64,7 +64,7 @@ router.get("/search", async (req, res, next) => {
 
   }
   catch (error) {
-    next(error);
+    res.status(404).send(error);
   }
 
   res.send({ recipes });

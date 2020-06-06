@@ -107,24 +107,16 @@ async function getRecipeNeededInfoByID(id) {
 
 function searchRecipesByQuery(req) {
   //set default number = 5 
-  var query = req.query;
-  let info = {params: {
-    apiKey: process.env.spooncular_apiKey,
-    query: query.query,
-    number: query.number,
-    ...(query.diet ? { diet: query.diet } : {}),
-    ...(query.cuisine ? { cuisine: query.cuisine } : {}),
-    ...(query.intolerances ? { intolerances: query.intolerances } : {})
-  }}
+  var params = req.params;
   //sending the correct request to spooncular
   return axios.get(`${api_domain}/search`, {
     params: {
       apiKey: process.env.spooncular_apiKey,
-      query: query.query,
-      number: query.number,
-      ...(query.diet ? { diet: query.diet } : {}),
-      ...(query.cuisine ? { cuisine: query.cuisine } : {}),
-      ...(query.intolerances ? { intolerances: query.intolerances } : {})
+      query: params.query,
+      number: params.number,
+      ...(params.diet ? { diet: params.diet } : {}),
+      ...(params.cuisine ? { cuisine: params.cuisine } : {}),
+      ...(params.intolerances ? { intolerances: params.intolerances } : {})
     }
   });
 }
