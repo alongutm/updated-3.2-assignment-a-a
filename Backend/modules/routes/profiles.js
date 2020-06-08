@@ -18,7 +18,6 @@ router.get("/myRecipes", async (req, res, next) => {
     }
 });
 
-
 router.get("/myFavorites", async (req, res, next) => {
     try {
         // get the user's username
@@ -46,7 +45,7 @@ router.post("/addFavorite", async (req, res, next) => {
         }
         res.status(200).send({ message: "Recipe was added to favorites", success: true });
     } catch (error) {
-        next(error);
+        res.status(400).send(error);
     }
 });
 
@@ -81,7 +80,6 @@ router.get("/search/query/:query/amount/:number", async (req, res, next) => {
         //add isSeen and isFavorite fields to each recipe.
         recipes = await recipeUtils.getSeenAndFavoriteInfo(recipes, req);
         res.status(200).send(recipes);
-
     }
     catch (error) {
         res.status(404).send(error);
@@ -116,8 +114,61 @@ router.post("/addFavorite", async (req, res, next) => {
         }
         res.status(200).send({ message: "Recipe was added to favorites", success: true });
     } catch (error) {
-        next(error);
+        res.status(400).send(error);
     }
 });
+
+router.get("/lastWatched", async (req, res, next) => {
+    try {
+        // get the user's username
+        let username = await DBUtils.execQuery(`SELECT username FROM users WHERE user_id= cast('${req.session.id}' as UNIQUEIDENTIFIER)`);
+        username = username[0].username;
+        // get my recipes from the myRecipes table
+        const lastWatched = await DBUtils.execQuery(`SELECT * FROM lastWatchedRecipes WHERE username='${username}'`);
+       
+        res.status(200).send(lastWatched);
+    } catch (error) {updateLastWatched
+        res.status(400).send(error);
+    }
+});
+
+router.post("/updateLastWatched", async (req, res, next) => {
+    try {
+        // get the user's username
+        let username = await DBUtils.execQuery(`SELECT username FROM users WHERE user_id= cast('${req.session.id}' as UNIQUEIDENTIFIER)`);
+        username = username[0].username;
+        // get my recipes from the myRecipes table
+        const lastWatched = await DBUtils.execQuery(`SELECT * FROM lastWatchedRecipes WHERE username='${username}'`);
+        let recipe_1,recipe_2,recipe_3;
+        if(lastWatched.length==0){// first watched recipe
+            recipe_1=req.query.recipe_id ;
+            recipe_2=0;
+            recipe_3=0;
+        }else{
+        recipe_1= lastWatched[0].recipe_id_1;
+        recipe_2= lastWatched[0].recipe_id_2;
+        recipe_3= lastWatched[0].recipe_id_3;
+        if(req.query.recipe_id == recipe_1){
+            // do nothing
+        }
+        else if(req.query.recipe_id == recipe_2){
+            recipe_2=recipe_1;
+            recipe_1=parseInt(req.query.recipe_id);
+        }
+        else{
+            recipe_3=recipe_2;
+            recipe_2=recipe_1;
+            recipe_1=parseInt(req.query.recipe_id);
+        }
+
+    }
+        await DBUtils.execQuery(`UPDATE lastWatchedRecipes SET recipe_id_1='${recipe_1}',recipe_id_2='${recipe_2}',recipe_id_3='${recipe_3}' WHERE username= '${username}'`);
+
+        res.status(200).send({ message: "Last watched updates successfully", success: true });
+    } catch (error) {updateLastWatched
+        res.status(400).send(error);
+    }
+});
+
 
 module.exports = router;

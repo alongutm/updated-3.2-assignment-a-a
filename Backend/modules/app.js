@@ -41,21 +41,7 @@ const users = require("./routes/users.js");
 const recipes = require("./routes/recipes.js");
 const profiles = require("./routes/profiles.js");
 
-//#region cookie middleware
-app.use(function (req, res, next) {
-  if (req.session && req.session.id) {
-    DBUtils.execQuery("SELECT user_id FROM users")
-      .then((users) => {
-        if (users.find((x) => x.user_id === req.session.user_id)) {
-          req.user_id = req.session.user_id;
-        }
-        next();
-      })
-      .catch((error) => next());
-  } else {
-    next();
-  }
-});
+
 //#endregion
 
 // senity check - verify that your server is still alive
@@ -66,8 +52,8 @@ app.get("/alive", (req, res)=> {
 // routing (COOL!)
 app.use("/users", users);
 app.use("/recipes", recipes);
-app.use("/profiles", profiles);
 app.use(auth);
+app.use("/profiles", profiles);
 
 // deafult router
 app.use((req, res)=>{

@@ -11,7 +11,7 @@ router.get("/recipeInfo", async (req, res, next) => {
     let fullInfo = await recipeUtils.getRecipeFullInfoByID(req.query.recipe_id);
     res.status(200).send({ fullInfo });
   } catch (error) {
-    next(error);
+    res.status(400).send(error);
   }
 });
 
@@ -31,7 +31,7 @@ router.get("/search/query/:query/amount/:number", async (req, res, next) => {
     var recipes = await recipeUtils.getRecipesArrayWithNeededInfo(recipesArray);
   }
   catch (error) {
-    next(error);
+    res.status(400).send(error);
   }
 
   res.send({ recipes });
@@ -44,7 +44,7 @@ router.get("/randomRecipes", async (req, res, next) => {
     res.status(200).send(recipes);
   }
   catch (error) {
-    next(error);
+    res.status(400).send(error);
   }
 });
 
