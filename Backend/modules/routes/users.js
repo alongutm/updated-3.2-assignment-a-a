@@ -63,7 +63,7 @@ router.post(
 
 router.post("/logout", function (req, res) {
     req.session.reset();
-    res.send({ success: true, message: "logout succeeded" });
+    res.status(200).send({ success: true, message: "logout succeeded" });
 });
 
 
