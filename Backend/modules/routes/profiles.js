@@ -46,7 +46,7 @@ router.post("/addFavorite", async (req, res, next) => {
         }
         res.status(200).send({ message: "Recipe was added to favorites", success: true });
     } catch (error) {
-        next(error);
+        res.status(400).send(error);
     }
 });
 
