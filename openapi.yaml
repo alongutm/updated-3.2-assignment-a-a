@@ -1,0 +1,670 @@
+openapi: 3.0.0
+info:
+  title: recipes API
+  description: recipes API holding the third age recipes.
+  version: API
+servers:
+- url: https://virtserver.swaggerhub.com/alongutm/GRANDMA_RECIPES_SITE_API/3.0.3
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: users
+  description: User operations,login,register etc.
+- name: recipes
+  description: all details about a specific recipe, and operations of guests
+- name: profiles
+  description: all operations regarding registered users
+paths:
+  /users/register:
+    post:
+      tags:
+      - users
+      summary: register a user
+      description: This operation is done by new users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body'
+        required: true
+      responses:
+        "201":
+          description: successful registration, a new user has been added to the system.
+          headers:
+            Set-Cookie:
+              style: simple
+              explode: false
+              schema:
+                type: string
+        "401":
+          description: Invalid input was provided
+          content:
+            application/json:
+              schema:
+                type: string
+  /users/login:
+    post:
+      tags:
+      - users
+      summary: log users into the system
+      description: This operation is done by users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_1'
+        required: true
+      responses:
+        "200":
+          description: loged in successfully
+          headers:
+            Set-Cookie:
+              style: simple
+              explode: false
+              schema:
+                type: string
+        "401":
+          description: login was failed
+          content:
+            application/json:
+              schema:
+                type: string
+  /users/logout:
+    get:
+      tags:
+      - users
+      summary: Log out
+      description: Logs out current logged in user session
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+  /recipes/randomRecipes:
+    get:
+      tags:
+      - recipes
+      summary: Get 3 randome recipes
+      description: Returns three randome recipes on each click
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                maxItems: 3
+                minItems: 3
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipe'
+        "400":
+          description: bad request
+  /recipes/recipeInfo:
+    get:
+      tags:
+      - recipes
+      summary: Recipe display
+      description: Returnes a wanted recipe by its ID
+      parameters:
+      - name: recipeID
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation - return recipe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        "404":
+          description: recipe was not found!
+  /profiles/myFamilyRecipes:
+    get:
+      tags:
+      - profiles
+      summary: User's saved recipes
+      description: User's saved recipes (such as Kube) will be displayed on screen.
+      responses:
+        "200":
+          description: recipe was created successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FamilyRecipe'
+        "400":
+          description: bad request
+      security:
+      - cookieAuth: []
+  /profiles/addFavorite:
+    post:
+      tags:
+      - profiles
+      summary: Add a favorite recipe into the user's favorites
+      description: Will be saved in the DB.
+      parameters:
+      - name: recipe_id
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: number
+          example: 3
+      responses:
+        "200":
+          description: Recipe was added to favorites
+        "400":
+          description: bad request
+      security:
+      - cookieAuth: []
+  /recipes/search/query/{query}/amount/{number}:
+    get:
+      tags:
+      - recipes
+      summary: search for recipes.
+      description: One can choose result-set sise- 5/10/15. Defult ia 5.
+      parameters:
+      - name: number
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          default: 5
+          enum:
+          - 5
+          - 10
+          - 15
+      - name: query
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: taco
+      - name: cuisin
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/cuisine'
+        example: Mexican
+      - name: diet
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/diet'
+        example: Vegetarian
+      - name: intolerance
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/intolerance'
+        example: Dairy
+      responses:
+        "200":
+          description: results were found
+          content:
+            application/json:
+              schema:
+                maxItems: 15
+                minItems: 5
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipeIntro'
+        "400":
+          description: results were not found
+  /profiles/myRecipes:
+    get:
+      tags:
+      - profiles
+      summary: get user's recpies
+      description: online user can see his own recpies.
+      responses:
+        "200":
+          description: results were found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipeIntro'
+        "400":
+          description: error
+      security:
+      - cookieAuth: []
+  /profiles/myFavorites:
+    get:
+      tags:
+      - profiles
+      summary: get user's favorite recpies
+      description: online user can see his favorite recpies.
+      responses:
+        "200":
+          description: recpies were found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipeIntro'
+        "400":
+          description: error
+      security:
+      - cookieAuth: []
+  /profiles/randomRecipes:
+    get:
+      tags:
+      - recipes
+      summary: Get 3 randome recipes
+      description: Returns three randome recipes on each click. Includes signed user's
+        information (seen, favorite)
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                maxItems: 3
+                minItems: 3
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipe'
+        "400":
+          description: bad request
+      security:
+      - cookieAuth: []
+  /profiles/updateLastWatched:
+    post:
+      tags:
+      - profiles
+      summary: Add the watched recipe into the user's history
+      description: Will be saved in the DB.
+      parameters:
+      - name: recipe_id
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: number
+          example: 3
+      responses:
+        "200":
+          description: Recipe was added to Last Watched
+        "400":
+          description: bad request
+      security:
+      - cookieAuth: []
+  /profiles/lastWatched:
+    get:
+      tags:
+      - profiles
+      summary: last Watched recipes
+      description: returns the last 3 recipes watched by the user
+      responses:
+        "200":
+          description: successfull operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipe'
+        "400":
+          description: bad request
+      security:
+      - cookieAuth: []
+  /profiles/search/query/{query}/amount/{number}:
+    get:
+      tags:
+      - profiles
+      summary: search for recipes.
+      description: One can choose result-set sise- 5/10/15. Defult ia 5.
+      parameters:
+      - name: number
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          default: 5
+          enum:
+          - 5
+          - 10
+          - 15
+      - name: query
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: taco
+      - name: cuisin
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/cuisine'
+        example: Mexican
+      - name: diet
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/diet'
+        example: Vegetarian
+      - name: intolerance
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/intolerance'
+        example: Dairy
+      responses:
+        "200":
+          description: results were found
+          content:
+            application/json:
+              schema:
+                maxItems: 15
+                minItems: 5
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipeIntro'
+        "400":
+          description: results were not found
+      security:
+      - cookieAuth: []
+components:
+  schemas:
+    RecipeIntro:
+      type: object
+      properties:
+        recipeName:
+          type: string
+          example: Beef Stew
+        image:
+          type: string
+          format: uri
+          example: https://www.gettyimages.com/detail/photo/eating-tasty-food-favorite-meal-royalty-free-image/931464590?adppopup=true
+        cookingTime:
+          type: integer
+          example: 60
+        numberOfLikes:
+          type: integer
+          example: 1000
+        isVegan:
+          type: boolean
+          example: true
+        isVegetarian:
+          type: boolean
+          example: false
+        isGlutenFree:
+          type: boolean
+          example: true
+        seen:
+          type: boolean
+          example: false
+        isFavorite:
+          type: boolean
+          example: false
+      description: An introduction of a recipe. contains some details such as cooking
+        time, popularity, image, vegan/vegeterian and so on.
+    Recipe:
+      type: object
+      properties:
+        recipeName:
+          type: string
+          example: Beef Stew
+        image:
+          type: string
+          format: uri
+          example: https://www.gettyimages.com/detail/photo/eating-tasty-food-favorite-meal-royalty-free-image/931464590?adppopup=true
+        cookingTime:
+          type: integer
+          example: 60
+        numberOfLikes:
+          type: integer
+          example: 1000
+        isVegan:
+          type: boolean
+          example: true
+        isVegetarian:
+          type: boolean
+          example: false
+        isGlutenFree:
+          type: boolean
+          example: true
+        seen:
+          type: boolean
+          example: false
+        isFavorite:
+          type: boolean
+          example: false
+        IngredientList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipe_IngredientList'
+        Instructions:
+          type: array
+          items:
+            type: string
+        MealsQuantity:
+          type: integer
+      description: a set of instructions telling you how to prepare and cook food,
+        including a list of what food is needed for this
+    FamilyRecipeIntro:
+      type: object
+      properties:
+        recipeName:
+          type: string
+          example: Beef Stew
+        author:
+          type: string
+          example: Savta Miriam
+        occasion:
+          type: string
+          example: Rosh Hashana
+        image:
+          type: string
+          format: uri
+          example: https://www.gettyimages.com/detail/photo/eating-tasty-food-favorite-meal-royalty-free-image/931464590?adppopup=true
+        cookingTime:
+          type: integer
+          example: 60
+        isVegan:
+          type: boolean
+          example: true
+        isVegetarian:
+          type: boolean
+          example: false
+        isGlutenFree:
+          type: boolean
+          example: true
+        seen:
+          type: boolean
+          example: false
+      description: An introduction of a recipe. contains some details such as cooking
+        time, popularity, image, vegan/vegeterian and so on.
+    FamilyRecipe:
+      type: object
+      properties:
+        recipeName:
+          type: string
+          example: Beef Stew
+        author:
+          type: string
+          example: Savta Miriam
+        occasion:
+          type: string
+          example: Rosh Hashana
+        image:
+          type: string
+          format: uri
+          example: https://www.gettyimages.com/detail/photo/eating-tasty-food-favorite-meal-royalty-free-image/931464590?adppopup=true
+        cookingTime:
+          type: integer
+          example: 60
+        isVegan:
+          type: boolean
+          example: true
+        isVegetarian:
+          type: boolean
+          example: false
+        isGlutenFree:
+          type: boolean
+          example: true
+        seen:
+          type: boolean
+          example: false
+        IngredientList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipe_IngredientList'
+        Instructions:
+          type: array
+          items:
+            type: string
+      description: a set of instructions telling you how to prepare and cook food,
+        including a list of what food is needed for this
+    intolerance:
+      type: string
+      enum:
+      - Dairy
+      - Egg
+      - Gluten
+      - Grain
+      - Peanut
+      - Seafood
+      - Sesame
+      - Shellfish
+      - Soy
+      - Sulfite
+      - Tree Nut
+      - Wheat
+    diet:
+      type: string
+      enum:
+      - Gluten Free
+      - Ketogenic
+      - Vegetarian
+      - Lacto-Vegetarian
+      - Ovo-Vegetarian
+      - Vegan
+      - Pescetarian
+      - Paleo
+      - Primal
+      - Whole30
+    cuisine:
+      type: string
+      enum:
+      - African
+      - American
+      - British
+      - Cajun
+      - Caribbean
+      - Chinese
+      - Eastern European
+      - European
+      - French
+      - German
+      - Greek
+      - Indian
+      - Irish
+      - Italian
+      - Japanese
+      - Jewish
+      - Korean
+      - Latin American
+      - Mediterranean
+      - Mexican
+      - Middle Eastern
+      - Nordic
+      - Southern
+      - Spanish
+      - Thai
+      - Vietnamese
+    body:
+      type: object
+      properties:
+        username:
+          maxLength: 8
+          minLength: 3
+          pattern: ^[a-zA-Z]+$
+          type: string
+          example: amit
+        firstName:
+          minLength: 2
+          type: string
+          example: amit
+        lastname:
+          minLength: 2
+          type: string
+          example: Shakarchy
+        country:
+          type: string
+          example: Israel
+        password:
+          maxLength: 10
+          minLength: 5
+          pattern: ^(?=.?[0-9])(?=.?[#?!@$%^&*-]).{5,10}$
+          type: string
+          example: k0K@Chanel
+        passwordConfirmation:
+          maxLength: 10
+          minLength: 5
+          type: string
+          example: k0K@Chanel
+        email:
+          type: string
+          format: email
+          example: amit_is_awesome@gmail.com
+        profileImage:
+          type: string
+          format: uri
+          example: https://www.gettyimages.com/detail/photo/newer-alone-when-you-have-dog-royalty-free-image/1214566619
+    body_1:
+      type: object
+      properties:
+        username:
+          maxLength: 8
+          minLength: 3
+          pattern: ^[a-zA-Z]+$
+          type: string
+          example: amit
+        password:
+          maxLength: 10
+          minLength: 5
+          type: string
+    Recipe_IngredientList:
+      type: object
+      properties:
+        ingredient:
+          type: string
+        quantity:
+          type: integer
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      name: session
+      in: cookie
