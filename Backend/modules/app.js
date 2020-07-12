@@ -9,11 +9,15 @@ var path = require("path");
 var logger = require("morgan");
 const session = require("client-sessions");
 const DBUtils = require("./utils/DBUtils");
+const cors =  require("cors");
+
 
 // --- app settings and configurations
 const app = express();
 app.use(logger("dev")); //logger
 app.use(express.json()); // parse application/json
+//enable all cors
+app.use(cors());
 
 app.use(cookieParser());
 // setting cookies configurations
@@ -21,7 +25,7 @@ app.use(
   session({
     cookieName: "session", // the cookie key name
     secret: process.env.COOKIE_SECRET, // the encryption key
-    duration: 60 *60* 60 * 1000, // expired after 60 minutes
+    duration: 60 60 60 * 1000, // expired after 60 minutes
     activeDuration: 0 // if expiresIn < activeDuration,
     //the session will be extended by activeDuration milliseconds
   })
