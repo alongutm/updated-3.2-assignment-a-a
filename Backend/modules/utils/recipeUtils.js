@@ -27,7 +27,7 @@ async function getRecipesArrayWithNeededInfo(recipesArray) {
   let recipes = [];
   // the "for-of" loop is aysnc`
   for (let fullRecipe of info_response) {
-    let fullInfo = {
+    let recipe = {
       recipe_id: fullRecipe.data.id,
       recipeName: fullRecipe.data.title,
       image: fullRecipe.data.image,
@@ -44,7 +44,8 @@ async function getRecipesArrayWithNeededInfo(recipesArray) {
       //seen: false,
       //isFavorite: false 
     }
-    recipes.push(fullInfo);
+  
+    recipes.push(recipe);
   }
 
   return recipes;
@@ -97,7 +98,9 @@ async function getRecipeNeededInfoByID(id) {
     IngredientList: recipe.data.extendedIngredients.map(function (obj) {
       return obj.name;
     }),
+    extendedIngredients: recipe.data.extendedIngredients,
     MealsQuantity: recipe.data.servings,
+    analyzedInstructions: recipe.data.analyzedInstructions
   }
   return info;
 }
