@@ -109,7 +109,8 @@ async function getRecipeNeededInfoByID(id) {
 
 function searchRecipesByQuery(req) {
   //set default number = 5 
-  var params = req.params;
+  let params = req.params;
+  let queryValues = req.query;
   //sending the correct request to spooncular
   return axios.get(`${api_domain}/search`, {
     params: {
@@ -117,9 +118,9 @@ function searchRecipesByQuery(req) {
       query: params.query,
       number: params.number,
       instructionsRequired: true,
-      ...(params.diet ? { diet: params.diet } : {}),
-      ...(params.cuisine ? { cuisine: params.cuisine } : {}),
-      ...(params.intolerances ? { intolerances: params.intolerances } : {})
+      ...(queryValues.diet ? { diet: queryValues.diet } : {}),
+      ...(queryValues.cuisine ? { cuisine: queryValues.cuisine } : {}),
+      ...(queryValues.intolerances ? { intolerances: queryValues.intolerances } : {})
     }
   });
 }
