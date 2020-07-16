@@ -247,4 +247,17 @@ router.post("/updateLastWatched", async (req, res, next) => {
   }
 });
 
+router.post("/updateSeenRecipe", async (req, res, next) => {
+    try {
+      // insert to 'seenRecipes' table in the database
+      let username = await DBUtils.execQuery(
+        `INSERT INTO seenRecipes VALUES ('${req.body.params.username}','${req.body.params.recipe_id}')`
+      );
+    res.status(200)
+        .send({ message: "Recipe was added to seen", success: true });
+    } catch (error) {
+      res.status(400).send(error);
+    }
+  });
+
 module.exports = router;
