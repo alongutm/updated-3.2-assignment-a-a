@@ -127,7 +127,7 @@ function searchRecipesByQuery(req) {
 
 
 async function getSeenAndFavoriteInfo(recipes,req) {
-  let username = await DBUtils.execQuery(`SELECT username FROM users WHERE user_id='${req.session.id}'`);
+  let username = await DBUtils.execQuery(`SELECT username FROM users WHERE user_id='${req.session.user_id}'`);
   username = username[0].username;
   let newRecipes = [];
   for (let recipe of recipes) {
