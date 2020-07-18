@@ -38,9 +38,9 @@ router.get("/myFavorites", async (req, res, next) => {
     let fullRecipes = await Promise.all(
       ids.map((id) => recipeUtils.getRecipeNeededInfoByID(id))
     );
-
+    let recipes = await recipeUtils.getSeenAndFavoriteInfo(fullRecipes, req); 
     //.log(fullRecipes);
-    res.status(200).send({ data: fullRecipes });
+    res.status(200).send({ data: recipes });
   } catch (error) {
     console.log(error);
 
