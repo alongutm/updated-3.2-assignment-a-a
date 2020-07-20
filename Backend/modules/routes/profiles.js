@@ -15,6 +15,8 @@ router.get("/myRecipes", async (req, res, next) => {
     const myRecipes = await DBUtils.execQuery(
       `SELECT * FROM myRecipes WHERE username='${username}'`
     );
+    //let recipes = await recipeUtils.getSeenAndFavoriteInfo(myRecipes, req); 
+
     res.status(200).send(myRecipes);
   } catch (error) {
     res.status(400).send(error);
@@ -28,7 +30,7 @@ router.get("/myFavorites", async (req, res, next) => {
       `SELECT username FROM users WHERE user_id= cast('${req.user_id}' as UNIQUEIDENTIFIER)`
     );
     username = username[0].username;
-    // get my recipes from the myRecipes table
+    // get my recipes from the favoriteRecipes table
     const myFavorites = await DBUtils.execQuery(
       `SELECT recipe_id FROM favoriteRecipes WHERE username='${username}'`
     );
@@ -97,8 +99,29 @@ router.get("/randomRecipes", async (req, res, next) => {
   try {
     let recipes = await recipeUtils.getRandomRecipes();
     //add seen and favorite values to recipes info
-    recipes = await recipeUtils.getSeenAndFavoriteInfo(recipes, req);
-    res.status(200).send(recipes);
+    let fullRecipes = await recipeUtils.getSeenAndFavoriteInfo(recipes, req);
+    res.status(200).send(fullRecipes);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+router.get("/recipeById", async (req, res, next) => {
+  try {
+    let recipe = await recipeUtils.getRecipeNeededInfoByID(req.query.recipe_id);
+    //add seen and favorite values to recipes info
+    let username = await DBUtils.execQuery(`SELECT username FROM users WHERE user_id='${req.session.user_id}'`);
+    username = username[0].username;
+      // get isFavorite value
+      const favorite = await DBUtils.execQuery(`SELECT * FROM favoriteRecipes WHERE recipe_id='${recipe.recipe_id}' and username ='${username}'`);
+      let isFavorite = (favorite.length > 0);     
+      // getRecipe info
+      recipe["isSeen"] = true;
+      recipe["isFavorite"] = isFavorite;
+      let recipeArr = [];
+      recipeArr.push(recipe);
+
+    res.status(200).send(recipeArr);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -249,13 +272,23 @@ router.post("/updateLastWatched", async (req, res, next) => {
 
 router.post("/updateSeenRecipe", async (req, res, next) => {
     try {
+      //check if already seen this recipe
+      const seen = await DBUtils.execQuery(`SELECT * FROM seenRecipes WHERE username='${req.body.params.username}' and recipe_id='${req.body.params.recipe_id}'`);
       // insert to 'seenRecipes' table in the database
-      let username = await DBUtils.execQuery(
-        `INSERT INTO seenRecipes VALUES ('${req.body.params.username}','${req.body.params.recipe_id}')`
-      );
-    res.status(200)
+      if(seen.length == 0){
+        let reponse = await DBUtils.execQuery(
+          `INSERT INTO seenRecipes VALUES ('${req.body.params.username}','${req.body.params.recipe_id}')`
+        );
+        res.status(200)
         .send({ message: "Recipe was added to seen", success: true });
-    } catch (error) {
+    }
+    else{
+      res.status(200)
+        .send({ message: "Recipe already seen", success: true });
+    }
+      }
+      
+    catch (error) {
       res.status(400).send(error);
     }
   });
