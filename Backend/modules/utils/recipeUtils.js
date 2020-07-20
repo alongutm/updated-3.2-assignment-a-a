@@ -136,7 +136,7 @@ async function getSeenAndFavoriteInfo(recipes,req) {
     let isFavorite = (favorite.length > 0);
     // get wasSeen value
     const seen = await DBUtils.execQuery(`SELECT * FROM seenRecipes WHERE username='${username}' and recipe_id='${recipe.recipe_id}'`);
-    let wasSeen = (favorite.length > 0);
+    let wasSeen = (seen.length > 0);
     // getRecipe info
     recipe["isSeen"] = wasSeen;
     recipe["isFavorite"] = isFavorite;
