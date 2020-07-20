@@ -138,7 +138,9 @@ router.get("/myFamilyRecipes", async (req, res, next) => {
     const myFamilyRecipes = await DBUtils.execQuery(
       `SELECT * FROM myFamilyRecipes WHERE username='${username}'`
     );
-    myFamilyRecipes.map((recipe) => recipe.IngredientList=recipe.IngredientList.split(","));
+    myFamilyRecipes.map(
+      (recipe) => (recipe.IngredientList = recipe.IngredientList.split(","))
+    );
 
     res.status(200).send(myFamilyRecipes);
   } catch (error) {
@@ -147,21 +149,21 @@ router.get("/myFamilyRecipes", async (req, res, next) => {
 });
 
 router.get("/getMyFamilyRecipe", async (req, res, next) => {
-    try {
-      // get the user's username
-      let username = await DBUtils.execQuery(
-        `SELECT username FROM users WHERE user_id= cast('${req.user_id}' as UNIQUEIDENTIFIER)`
-      );
-      username = username[0].username;
-      // get my recipes from the myRecipes table
-      const myFamilyRecipes = await DBUtils.execQuery(
-        `SELECT * FROM myFamilyRecipes WHERE username='${username}' AND recipe_id='${req.query.recipe_id}'`
-      );
-      res.status(200).send(myFamilyRecipes);
-    } catch (error) {
-      res.status(404).send(error);
-    }
-  });
+  try {
+    // get the user's username
+    let username = await DBUtils.execQuery(
+      `SELECT username FROM users WHERE user_id= cast('${req.user_id}' as UNIQUEIDENTIFIER)`
+    );
+    username = username[0].username;
+    // get my recipes from the myRecipes table
+    const myFamilyRecipes = await DBUtils.execQuery(
+      `SELECT * FROM myFamilyRecipes WHERE username='${username}' AND recipe_id='${req.query.recipe_id}'`
+    );
+    res.status(200).send(myFamilyRecipes);
+  } catch (error) {
+    res.status(404).send(error);
+  }
+});
 
 router.get("/lastWatched", async (req, res, next) => {
   try {
@@ -219,7 +221,10 @@ router.post("/updateLastWatched", async (req, res, next) => {
       recipe_1 = lastWatched[0].recipe_id_1;
       recipe_2 = lastWatched[0].recipe_id_2;
       recipe_3 = lastWatched[0].recipe_id_3;
-      if (req.body.recipe_id == recipe_1 || isNaN(parseInt(req.body.recipe_id)))  {
+      if (
+        req.body.recipe_id == recipe_1 ||
+        isNaN(parseInt(req.body.recipe_id))
+      ) {
         // do nothing
       } else if (req.body.recipe_id == recipe_2) {
         recipe_2 = recipe_1;
@@ -242,6 +247,19 @@ router.post("/updateLastWatched", async (req, res, next) => {
     res
       .status(200)
       .send({ message: "Last watched updates successfully", success: true });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+router.get("/getProfilePic", async (req, res, next) => {
+  try {
+    // get the user's username
+    let username = await DBUtils.execQuery(
+      `SELECT profile_pic FROM users WHERE user_id= cast('${req.user_id}' as UNIQUEIDENTIFIER)`
+    );
+    //console.log(username[0].profile_pic);
+    res.status(200).send(username[0].profile_pic);
   } catch (error) {
     res.status(400).send(error);
   }
